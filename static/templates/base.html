@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{block "title" .}}{{end}}</title>
+    <!-- Add CSS styles here -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .navbar {
+            justify-content: flex-end;
+        }
+        @media (max-width: 768px) {
+            h2 {
+                font-size: 1.5rem; /* Smaller text on smaller screens */
+            }
+        }
+    </style>
+    
+</head>
+
+<body>   
+    <div class="container mt-3">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="/">Example</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+               <a class="nav-item nav-link" href="/">Home</a>
+                <a class="nav-item nav-link" href="/upload">Upload</a>
+                <a href="/logout" class="btn btn-danger ml-auto">Logout</a>
+            </div>
+        </nav>  
+        <main>
+            <h2 class="text-center">Welcome, {{.Username}}!</h2>
+            {{block "content" .}}{{end}}
+        </main>
+    </div>
+</html>
