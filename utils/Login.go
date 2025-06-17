@@ -1,33 +1,47 @@
 package utilities
 
 import (
-	"crypto/rand"
 	"database/sql"
-	"encoding/base64"
 	"errors"
-	"net/http"
 
+	"github.com/google/go-safeweb/safehttp"
+	_ "github.com/mattn/go-sqlite3" // Import the SQLite driver
 	"golang.org/x/crypto/bcrypt"
 )
 
-type Transaction struct {
-	db *sql.DB
-}
+const dbFile = "exam1webapp/webapp.db"
 
-func generateSessionID() (string, error) {
-	b := make([]byte, 32)
-	_, err := rand.Read(b)
+const loginQuery = `SELECT password FROM tbl_users WHERE username = ?`
+
+func dbConnect() (*sql.DB, error) {
+
+	db, err := sql.Open("sqlite3", dbFile)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return base64.URLEncoding.EncodeToString(b), nil
+
+	return db, nil
 }
 
-func (s *Transaction) Login(username, password string, w http.ResponseWriter) error {
+// func generateSessionID() (string, error) {
+// 	b := make([]byte, 32)
+// 	_, err := rand.Read(b)
+// 	if err != nil {
+// 		return "", err
+// 	}
+// 	return base64.URLEncoding.EncodeToString(b), nil
+// }
+
+func Login(username, password string, w safehttp.ResponseWriter) error {
 	var storedPassword string
-	err := s.db.QueryRow("SELECT password FROM tbl_users WHERE username = ?", username).Scan(&storedPassword)
+	db, err := dbConnect()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		return err
+	}
+
+	err = db.QueryRow(loginQuery, username).Scan(&storedPassword)
+	if err != nil {
+		w.WriteError(safehttp.StatusUnauthorized)
 		return err
 	}
 
